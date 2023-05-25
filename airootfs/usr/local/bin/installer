@@ -2076,6 +2076,9 @@ install_check_bg()
 		fi
 		chrun "pacman -Syyu --noconfirm"
 		chrun "pacman -S archlinux-keyring archlabs-keyring --noconfirm"
+
+		chrun "/usr/local/bin/cachyos-repo.sh --install"
+
 		chrun "pacman -S ${ISO_PKGS[*]} $luks $NET_TYPE --noconfirm --needed"
 
 	} >> /tmp/bgout 2>&1
