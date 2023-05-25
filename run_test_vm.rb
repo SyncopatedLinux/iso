@@ -18,10 +18,15 @@ class QemuSystemCommand < QemuCommand
 
   def execute
     command = "qemu-system-x86_64 -cdrom #{@selected_iso} -cpu host -enable-kvm -m 2048 -smp 2 -drive file=#{@selected_drive},format=qcow2"
-
     puts "Executing command: #{command}"
 
-    system(command)
+    # Fork the process to execute the command
+    pid = fork do
+      exec(command)
+    end
+
+    # Wait for the child process to finish
+    Process.wait(pid)
   end
 end
 
@@ -33,10 +38,15 @@ class QemuImgCommand < QemuCommand
 
   def execute
     qemu_img_command = "qemu-img create -f qcow2 #{@drive_path} #{@size}G"
-
     puts "Executing command: #{qemu_img_command}"
 
-    system(qemu_img_command)
+    # Fork the process to execute the command
+    pid = fork do
+      exec(qemu_img_command)
+    end
+
+    # Wait for the child process to finish
+    Process.wait(pid)
   end
 end
 
