@@ -32,7 +32,7 @@ if selection == 'Create new QEMU disk'
   puts "Executing command: #{qemu_img_command}"
 
   # Uncomment the following line to execute the qemu-img command
-  # system(qemu_img_command)
+  system(qemu_img_command)
 else
   choice_index = selection.split(')')[0].to_i - 1
 
@@ -43,5 +43,5 @@ else
   puts "Executing command: #{command}"
 
   # Uncomment the following line to execute the command
-  # system(command)
+  system(command)
 end
