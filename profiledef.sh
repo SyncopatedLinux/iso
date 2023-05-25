@@ -4,7 +4,7 @@
 # this is modified by the build script when using the LTS kernel
 iso_name="syncopated"
 
-iso_label="AL$(date +%Y%m)"
+iso_label="SL$(date +%Y%m)"
 iso_publisher="syncopated Linux <https://syncopatedlinux.gitlab.io>"
 iso_application="syncopated Linux Live/Rescue CD"
 iso_version="$(date +%Y.%m.%d)"
