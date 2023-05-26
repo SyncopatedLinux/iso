@@ -2040,8 +2040,9 @@ add_specific_repo() {
 install_cachyos_repo() {
     msg "Installing CachyOS repo.." 1
 	{
-		chrun "pacman-key --recv-keys F3B607488DB35A47 --keyserver keyserver.ubuntu.com"
-		chrun "pacman-key --lsign-key F3B607488DB35A47"
+		chrun "pacman-key --recv-keys 882DCFE48E2051D48E2562ABF3B607488DB35A47 --keyserver keyserver.ubuntu.com"
+		chrun "pacman-key --finder 882DCFE48E2051D48E2562ABF3B607488DB35A47"
+		chrun "pacman-key --lsign-key 882DCFE48E2051D48E2562ABF3B607488DB35A47"
 
 		local mirror_url="https://mirror.cachyos.org/repo/x86_64/cachyos"
 
