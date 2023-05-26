@@ -2037,7 +2037,7 @@ add_specific_repo() {
 }
 
 install_cachyos_repo() {
-    msg "Installing CachyOS repo.."
+    echo "Installing CachyOS repo.."
 	{
 		chrun "pacman-key --recv-keys F3B607488DB35A47 --keyserver keyserver.ubuntu.com"
 		chrun "pacman-key --lsign-key F3B607488DB35A47"
