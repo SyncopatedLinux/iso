@@ -67,7 +67,7 @@ while getopts ":huLtl:" OPT; do
 		u)
 			echo "Updating installer remotely"
 			sleep 0.5
-			if ! curl -#fSL https://bitbucket.org/archlabslinux/installer/raw/master/installer -o airootfs/usr/local/bin/installer; then
+			if ! curl -#fSL https://gitlab.com/syncopatedlinux/iso/-/raw/main/airootfs/usr/local/bin/installer -o airootfs/usr/local/bin/installer; then
 				echo "${0##*/}: error: failed to update installer"
 				exit 1
 			fi
