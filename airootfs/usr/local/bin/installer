@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 # This program is free software, provided under the GNU GPL
 # Written by Nathaniel Maia for Archlabs, works in most Arch based distros
 # Some ideas and code reworked from other resources
