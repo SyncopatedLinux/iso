@@ -87,6 +87,9 @@ drive_files = Dir.glob(File.join(drive_folder, '*.qcow2')).sort
 
 prompt = TTY::Prompt.new
 
+# Prompt to choose between virt-install and qemu-system-x86_64
+qemu_choice = prompt.select('Select QEMU command:', ['virt-install', 'qemu-system-x86_64'])
+
 # Prompt for vCPUs and memory
 vcpus = prompt.ask('Enter the number of vCPUs:')
 memory = prompt.ask('Enter the memory size (in MB):', convert: :int)
