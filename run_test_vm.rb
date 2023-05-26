@@ -41,9 +41,6 @@ class VirtInstallCommand < QemuCommand
   end
 
   def execute
-    vcpus = prompt.ask('Enter the number of vCPUs:')
-    memory = prompt.ask('Enter the memory size (in MB):', convert: :int)
-
     command = "virt-install --cdrom #{@selected_iso} --disk #{@selected_drive} --cpu host --memory #{@memory} --vcpus #{@vcpus}"
     puts "Executing command: #{command}"
 
