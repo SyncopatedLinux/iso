@@ -2041,7 +2041,7 @@ install_cachyos_repo() {
     msg "Installing CachyOS repo.." 1
 	{
 		chrun "pacman-key --recv-keys 882DCFE48E2051D48E2562ABF3B607488DB35A47 --keyserver keyserver.ubuntu.com"
-		chrun "pacman-key --finder 882DCFE48E2051D48E2562ABF3B607488DB35A47"
+		chrun "pacman-key --finger 882DCFE48E2051D48E2562ABF3B607488DB35A47"
 		chrun "pacman-key --lsign-key 882DCFE48E2051D48E2562ABF3B607488DB35A47"
 
 		local mirror_url="https://mirror.cachyos.org/repo/x86_64/cachyos"
@@ -2055,9 +2055,11 @@ install_cachyos_repo() {
 
 		local is_repo_added="$(check_if_repo_was_added)"
 		local is_repo_commented="$(check_if_repo_was_commented)"
+
 		if [ $is_repo_added -ne 0 ] || [ $is_repo_commented -ne 0 ]; then
 			add_specific_repo x86-64-v3 $MNT/etc/pacman.d/install-repo.awk cachyos-v3
-			add_specific_repo x86-64-v4 $MNT/etc/pacman.d/install-v4-repo.awk cachyos-v4
+			#FIXME: during the install, it false detects support for v4
+			# add_specific_repo x86-64-v4 $MNT/etc/pacman.d/install-v4-repo.awk cachyos-v4
 			chrun "pacman -Syyu --noconfirm"
 		else
 			msg "Repo is already added!" 1
@@ -2099,7 +2101,6 @@ install_check_bg()
 		chrun "pacman -S archlinux-keyring archlabs-keyring --noconfirm"
 
 		install_cachyos_repo
-
 
 		chrun "pacman -S ${ISO_PKGS[*]} $luks $NET_TYPE --noconfirm --needed"
 

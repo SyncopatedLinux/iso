@@ -2,7 +2,6 @@
 
 #shellcheck disable=2016
 
-
 begin=$(date +%s)
 
 if ! hash mkarchiso curl > /dev/null 2>&1; then
@@ -10,39 +9,7 @@ if ! hash mkarchiso curl > /dev/null 2>&1; then
 	exit 1
 fi
 
-# create a list of packages
-cp /usr/share/archiso/configs/releng/packages.x86_64 packages.x86_64
-# we don't use the grml zsh configs
-sed -i '/grml-zsh-config/d' packages.x86_64
-# add the AL live session specific packages to the list
-cat >> packages.x86_64 <<- EOF
-
-# live session packages
-acpi
-alsa-firmware
-alsa-lib
-alsa-plugins
-archlabs-dk
-archlabs-keyring
-archlabs-lemonbar
-b43-firmware
-dialog
-dunst
-libnotify
-gsimplecal
-lm_sensors
-networkmanager
-nitrogen
-pacman-contrib
-pamixer
-pavucontrol
-pulseaudio
-rofi
-sxhkd
-xorg-server
-xorg-xinit
-xterm
-EOF
+# placeholder for packages.x86_64 modifcations
 
 while getopts ":huLtl:" OPT; do
 	case "$OPT" in
