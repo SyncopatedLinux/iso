@@ -10,12 +10,6 @@ class QemuCommand
   end
 end
 
-class SharedPrompt
-  def self.prompt
-    @prompt ||= TTY::Prompt.new
-  end
-end
-
 class QemuSystemCommand < QemuCommand
   def initialize(selected_iso, selected_drive,vcpus,memory)
     @selected_iso = selected_iso
@@ -93,17 +87,14 @@ drive_files = Dir.glob(File.join(drive_folder, '*.qcow2')).sort
 
 prompt = TTY::Prompt.new
 
-create_new_disk_choice = 'Create new QEMU disk'
+# Prompt for vCPUs and memory
+vcpus = prompt.ask('Enter the number of vCPUs:')
+memory = prompt.ask('Enter the memory size (in MB):', convert: :int)
 
-choices = iso_files.map.with_index do |iso_file, index|
-  iso_name = File.basename(iso_file)
-  drive_name = File.basename(drive_files[index]) if drive_files[index]
-  "#{index + 1}) #{iso_name} with #{drive_name}"
-end
+# Prompt to choose between creating a new disk or selecting an existing one
+create_new_disk = prompt.yes?('Create a new QEMU disk?')
 
-selection = prompt.select('Available options:', [create_new_disk_choice] + choices.compact)
-
-if selection == create_new_disk_choice
+if create_new_disk
   drive_name = prompt.ask('Enter a name for the new QEMU disk (without extension):')
   drive_name += '.qcow2'
   drive_path = File.join(drive_folder, drive_name)
@@ -118,20 +109,28 @@ if selection == create_new_disk_choice
   selected_iso = Shellwords.escape(prompt.select('Select ISO file:', iso_files))
   selected_drive = Shellwords.escape(prompt.select('Select drive file:', drive_files))
 
-  vcpus = SharedPrompt.prompt.ask('Enter the number of vCPUs:')
-  memory = SharedPrompt.prompt.ask('Enter the memory size (in MB):', convert: :int)
+  if qemu_choice == 'virt-install'
+    command = VirtInstallCommand.new(selected_iso, selected_drive, vcpus, memory)
+  else
+    command = QemuSystemCommand.new(selected_iso, selected_drive, vcpus, memory)
+  end
 
-  command = QemuSystemCommand.new(selected_iso, selected_drive, vcpus, memory)
   command.execute
 else
-  choice_index = selection.split(')')[0].to_i - 1
+  # Prompt to choose ISO and drive files
+  if qemu_choice == 'virt-install'
+    selected_iso = Shellwords.escape(prompt.select('Select ISO file:', iso_files))
+    selected_drive = Shellwords.escape(prompt.select('Select drive file:', drive_files))
 
-  selected_iso = Shellwords.escape(iso_files[choice_index])
-  selected_drive = Shellwords.escape(drive_files[choice_index])
+    command = VirtInstallCommand.new(selected_iso, selected_drive, vcpus, memory)
+    command.execute
+  else
+    choice_index = selection.split(')')[0].to_i - 1
 
-  vcpus = SharedPrompt.prompt.ask('Enter the number of vCPUs:')
-  memory = SharedPrompt.prompt.ask('Enter the memory size (in MB):', convert: :int)
+    selected_iso = Shellwords.escape(iso_files[choice_index])
+    selected_drive = Shellwords.escape(drive_files[choice_index])
 
-  command = QemuSystemCommand.new(selected_iso, selected_drive, vcpus, memory)
-  command.execute
+    command = QemuSystemCommand.new(selected_iso, selected_drive, vcpus, memory)
+    command.execute
+  end
 end
