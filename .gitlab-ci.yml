@@ -13,6 +13,6 @@ build_iso:
   # rules:
   #   - if: '$CI_PIPELINE_SOURCE == "web"'
   #   - if: '$CI_PIPELINE_SOURCE == "schedule"'
-  artifacts:
-    paths:
-      - out
+  # artifacts:
+  #   paths:
+  #     - out
