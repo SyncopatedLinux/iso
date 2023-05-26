@@ -2021,18 +2021,18 @@ add_specific_repo() {
 
     local is_isa_supported="$(eval ${cmd_check})"
     if [ $is_isa_supported -eq 0 ]; then
-        msg "${isa_level} is supported"
+        echo "${isa_level} is supported"
 
         cp $pacman_conf $pacman_conf_cachyos
         gawk -i inplace -f $gawk_script $pacman_conf_cachyos || true
 
-        msg "Backup old config"
+        echo "Backup old config"
         mv $pacman_conf $pacman_conf_path_backup
 
-        msg "CachyOS ${repo_name} Repo changed"
+        echo "CachyOS ${repo_name} Repo changed"
         mv $pacman_conf_cachyos $pacman_conf
     else
-        msg "${isa_level} is not supported"
+        echo "${isa_level} is not supported"
     fi
 }
 
@@ -2057,7 +2057,7 @@ install_cachyos_repo() {
 			add_specific_repo x86-64-v3 $MNT/etc/pacman.d/install-repo.awk cachyos-v3
 			add_specific_repo x86-64-v4 $MNT/etc/pacman.d/install-v4-repo.awk cachyos-v4
 		else
-			msg "Repo is already added!"
+			echo "Repo is already added!"
 		fi
 
 	} >> /tmp/bgout 2>&1
