@@ -10,9 +10,9 @@ build_iso:
     - pacman -Sy archiso --noconfirm --noprogressbar
   script :
     - ./.gitlab/ci/build_syncopated.sh
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "web"'
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  # rules:
+  #   - if: '$CI_PIPELINE_SOURCE == "web"'
+  #   - if: '$CI_PIPELINE_SOURCE == "schedule"'
   artifacts:
     paths:
       - out/
