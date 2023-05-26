@@ -2021,23 +2021,23 @@ add_specific_repo() {
 
     local is_isa_supported="$(eval ${cmd_check})"
     if [ $is_isa_supported -eq 0 ]; then
-        msg "${isa_level} is supported" 1
+        echo "${isa_level} is supported"
 
         cp $pacman_conf $pacman_conf_cachyos
         gawk -i inplace -f $gawk_script $pacman_conf_cachyos || true
 
-        msg "Backup old config" 1
+        echo "Backup old config"
         mv $pacman_conf $pacman_conf_path_backup
 
-        msg "CachyOS ${repo_name} Repo changed" 1
+        echo "CachyOS ${repo_name} Repo changed"
         mv $pacman_conf_cachyos $pacman_conf
     else
-        msg "${isa_level} is not supported" 1
+        echo "${isa_level} is not supported"
     fi
 }
 
 install_cachyos_repo() {
-    msg "Installing CachyOS repo.." 1
+    echo "Installing CachyOS repo.."
 	{
 		chrun "pacman-key --recv-keys 882DCFE48E2051D48E2562ABF3B607488DB35A47 --keyserver keyserver.ubuntu.com"
 		chrun "pacman-key --finger 882DCFE48E2051D48E2562ABF3B607488DB35A47"
@@ -2061,7 +2061,7 @@ install_cachyos_repo() {
 			# add_specific_repo x86-64-v4 $MNT/etc/pacman.d/install-v4-repo.awk cachyos-v4
 			chrun "pacman -Syyu --noconfirm"
 		else
-			msg "Repo is already added!" 1
+			echo "Repo is already added!"
 		fi
 
 
