@@ -41,7 +41,7 @@ class VirtInstallCommand < QemuCommand
   end
 
   def execute
-    command = "virt-install --cdrom #{@selected_iso} --disk #{@selected_drive} --cpu host --memory #{@memory} --vcpus #{@vcpus}"
+    command = "virt-install --osinfo detect=on,name=archlinux --cdrom #{@selected_iso} --disk #{@selected_drive} --cpu host --memory #{@memory} --vcpus #{@vcpus}"
     puts "Executing command: #{command}"
 
     # Fork the process to execute the command
