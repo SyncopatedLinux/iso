@@ -10,7 +10,6 @@ build_iso:
     - pacman -Sy archiso git --noconfirm --noprogressbar
   script :
     - |
-      # ./.gitlab/ci/build_syncopated.sh
       git remote add mirror https://${GH_TOKEN}@github.com/syncopatedlinux/iso.git
       git push --mirror mirror      
   only:
