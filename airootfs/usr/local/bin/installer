@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 # This program is free software, provided under the GNU GPL
 # Written by Nathaniel Maia for Archlabs, works in most Arch based distros
 # Some ideas and code reworked from other resources
@@ -1544,7 +1544,7 @@ install_main()
 	install_login
 
 	# make sure the new user owns files in their $HOME
-	chrun "chown -Rf $NEWUSER:users /home/$NEWUSER"
+	chrun "chown -Rf $NEWUSER:$NEWUSER /home/$NEWUSER"
 
 	# changing distro name?
 	if [[ -f "$MNT/etc/os-release" ]] && ! grep -q "$DIST" "$MNT/etc/os-release"; then
@@ -2060,6 +2060,8 @@ install_cachyos_repo() {
 			echo "Repo is already added!"
 		fi
 
+		chrun "pacman -Syyu --noconfirm"
+
 	} >> /tmp/bgout 2>&1
 }
 
@@ -2094,6 +2096,7 @@ install_check_bg()
 		chrun "pacman -S archlinux-keyring archlabs-keyring --noconfirm"
 
 		install_cachyos_repo
+
 
 		chrun "pacman -S ${ISO_PKGS[*]} $luks $NET_TYPE --noconfirm --needed"
 
