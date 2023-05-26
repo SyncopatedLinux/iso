@@ -15,4 +15,4 @@ build_iso:
   #   - if: '$CI_PIPELINE_SOURCE == "schedule"'
   artifacts:
     paths:
-      - out/
+      - out
