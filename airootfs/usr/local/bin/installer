@@ -129,6 +129,7 @@ typeset -a ISO_PKGS=(
 "man-db"
 "man-pages"
 "mdadm"
+"net-tools"
 "mtools"
 "nfs-utils"
 "nilfs-utils"
