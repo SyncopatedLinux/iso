@@ -2069,6 +2069,12 @@ install_cachyos_repo() {
 	} >> /tmp/bgout 2>&1
 }
 
+install_osamc_key() {
+	chrun "curl https://arch.osamc.de/proaudio/osamc.gpg | pacman-key --add -"
+
+	chrun "pacman-key --lsign-key 762AE5DB2B38786364BD81C4B9141BCC62D38EE5"
+}
+
 install_check_bg()
 {
 	# check for errors in the background install
@@ -2099,6 +2105,7 @@ install_check_bg()
 		chrun "pacman -Syyu --noconfirm"
 		chrun "pacman -S archlinux-keyring archlabs-keyring --noconfirm"
 
+		install_osamc_key
 		install_cachyos_repo
 
 		chrun "pacman -S ${ISO_PKGS[*]} $luks $NET_TYPE --noconfirm --needed"
