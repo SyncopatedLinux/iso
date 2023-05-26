@@ -25,7 +25,7 @@ class QemuSystemCommand < QemuCommand
   end
 
   def execute
-    command = "qemu-system-x86_64 -cdrom #{@selected_iso} -cpu host -enable-kvm -m #{memory} -smp #{vcpus} -drive file=#{@selected_drive},format=qcow2"
+    command = "qemu-system-x86_64 -cdrom #{@selected_iso} -cpu host -enable-kvm -m #{@memory} -smp #{@vcpus} -drive file=#{@selected_drive},format=qcow2"
     puts "Executing command: #{command}"
 
     # Fork the process to execute the command
@@ -50,7 +50,7 @@ class VirtInstallCommand < QemuCommand
     vcpus = prompt.ask('Enter the number of vCPUs:')
     memory = prompt.ask('Enter the memory size (in MB):', convert: :int)
 
-    command = "virt-install --cdrom #{@selected_iso} --disk #{@selected_drive} --cpu host --memory #{memory} --vcpus #{vcpus}"
+    command = "virt-install --cdrom #{@selected_iso} --disk #{@selected_drive} --cpu host --memory #{@memory} --vcpus #{@vcpus}"
     puts "Executing command: #{command}"
 
     # Fork the process to execute the command
