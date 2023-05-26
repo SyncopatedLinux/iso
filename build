@@ -114,6 +114,15 @@ shift $((OPTIND - 1))
 [[ -e airootfs/etc/os-release ]] && sed -i "s/\(VERSION_ID\)=.*/\1=$(date +%Y.%m.%d)/g" airootfs/etc/os-release
 [[ -e airootfs/etc/lsb-release ]] && sed -i "s/\(DISTRIB_RELEASE\)=.*/\1=$(date +%Y.%m.%d)/g" airootfs/etc/lsb-release
 
+fetch_cachyos_mirrorlist() {
+
+    local _mirrorlist_url="https://github.com/CachyOS/CachyOS-PKGBUILDS/raw/master/cachyos-mirrorlist/cachyos-mirrorlist"
+
+    curl -sSL "${_mirrorlist_url}" > archiso/airootfs/etc/pacman.d/cachyos-mirrorlist
+}
+
+fetch_cachyos_mirrorlist
+
 # build it
 mkarchiso -v .
 
