@@ -4,10 +4,6 @@ require 'tty-prompt'
 require 'tty-file'
 require 'shellwords'
 
-require 'tty-prompt'
-require 'tty-file'
-require 'shellwords'
-
 class QemuCommand
   def execute
     raise NotImplementedError, "#{self.class} has not implemented the execute method"
@@ -58,11 +54,6 @@ HOME = ENV['HOME']
 
 iso_folder = File.join(HOME, 'otherspace', 'iso', 'out')
 drive_folder = File.join(HOME, 'otherspace', 'iso')
-
-iso_files = Dir.glob(File.join(iso_folder, '*.iso')).sort
-drive_files = Dir.glob(File.join(drive_folder, '*.qcow2')).sort
-
-prompt = TTY::Prompt.new
 
 prompt = TTY::Prompt.new
 
