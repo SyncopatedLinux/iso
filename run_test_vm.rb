@@ -55,6 +55,9 @@ HOME = ENV['HOME']
 iso_folder = File.join(HOME, 'otherspace', 'iso', 'out')
 drive_folder = File.join(HOME, 'otherspace', 'iso')
 
+iso_files = Dir.glob(File.join(iso_folder, '*.iso')).sort
+drive_files = Dir.glob(File.join(drive_folder, '*.qcow2')).sort
+
 prompt = TTY::Prompt.new
 
 create_new_disk_choice = 'Create new QEMU disk'
