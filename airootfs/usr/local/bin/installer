@@ -2232,7 +2232,7 @@ install_background()
 		install_mirrorlist > /tmp/bgout 2>&1
 		al_repo "/etc/pacman.conf"
 		{
-			pacman -Syy
+			pacman -Syy --noconfirm
 			pacman -S archlinux-keyring --noconfirm
 			pacstrap /mnt base rsync
 		} >> /tmp/bgout 2>&1
