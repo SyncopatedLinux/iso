@@ -4,6 +4,10 @@ require 'tty-prompt'
 require 'tty-file'
 require 'shellwords'
 
+require 'tty-prompt'
+require 'tty-file'
+require 'shellwords'
+
 class QemuCommand
   def execute
     raise NotImplementedError, "#{self.class} has not implemented the execute method"
@@ -60,14 +64,16 @@ drive_files = Dir.glob(File.join(drive_folder, '*.qcow2')).sort
 
 prompt = TTY::Prompt.new
 
+prompt = TTY::Prompt.new
+
 create_new_disk_choice = 'Create new QEMU disk'
-choices = [create_new_disk_choice] + iso_files.map.with_index do |iso_file, index|
+choices = iso_files.map.with_index do |iso_file, index|
   iso_name = File.basename(iso_file)
-  drive_name = File.basename(drive_files[index])
+  drive_name = File.basename(drive_files[index]) if drive_files[index]
   "#{index + 1}) #{iso_name} with #{drive_name}"
 end
 
-selection = prompt.select('Available options:', choices)
+selection = prompt.select('Available options:', [create_new_disk_choice] + choices.compact)
 
 if selection == create_new_disk_choice
   drive_name = prompt.ask('Enter a name for the new QEMU disk (without extension):')
@@ -79,9 +85,10 @@ if selection == create_new_disk_choice
   command = QemuImgCommand.new(drive_path, size)
   command.execute
 
-  # Use the newly created disk with the selected ISO
+  drive_files << drive_path # Add the newly created drive to the array
+
   selected_iso = Shellwords.escape(prompt.select('Select ISO file:', iso_files))
-  selected_drive = Shellwords.escape(drive_path)
+  selected_drive = Shellwords.escape(prompt.select('Select drive file:', drive_files))
 
   command = QemuSystemCommand.new(selected_iso, selected_drive)
   command.execute
