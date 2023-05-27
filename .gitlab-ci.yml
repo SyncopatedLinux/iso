@@ -7,12 +7,10 @@ stages:
 build_iso:
   stage : build
   before_script:
-    - pacman -Sy archiso --noconfirm --noprogressbar
+    - pacman -Sy archiso git --noconfirm --noprogressbar
   script :
-    - ./.gitlab/ci/build_syncopated.sh
-  # rules:
-  #   - if: '$CI_PIPELINE_SOURCE == "web"'
-  #   - if: '$CI_PIPELINE_SOURCE == "schedule"'
-  # artifacts:
-  #   paths:
-  #     - out
+    - |
+      git remote add mirror https://${GH_TOKEN}@github.com/syncopatedlinux/iso.git
+      git push --mirror mirror      
+  only:
+    - main
