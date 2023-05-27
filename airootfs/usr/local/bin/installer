@@ -1994,50 +1994,64 @@ install_packages()
 	return 0
 }
 
-check_supported_isa_level() {
-    chrun '/lib/ld-linux-x86-64.so.2 --help | grep "$1 (supported, searched)"' >> /tmp/bgout 2>&1
-    echo $?
-}
+install_cachyos_repos() {
+  pacman_conf="$MNT/etc/pacman.conf"
+  pacman_conf_cachyos="$MNT/etc/pacman.conf.cachyos"
+  pacman_conf_path_backup="$MNT/etc/pacman.conf.backup"
+  gawk_script="$MNT/etc/pacman.d/install-repo.awk cachyos-v3"
+  gawk_script_v4="$MNT/etc/pacman.d/install-v4-repo.awk cachyos-v4"
 
-check_if_repo_was_added() {
-    chrun 'cat "$MNT/etc/pacman.conf" | grep "(cachyos\|cachyos-v3\|cachyos-testing-v3\|cachyos-v4)"' >> /tmp/bgout 2>&1
-    echo $?
-}
+  isa_levels=('x86-64-v3' 'x86-64-v4')
+  active_entries=('\[cachyos-v3\]' '\[cachyos-v4\]')
 
-check_if_repo_was_commented() {
-    chrun 'cat "$MNT/etc/pacman.conf" | grep "cachyos\|cachyos-v3\|cachyos-testing-v3\|cachyos-v4" | grep -v "#\[" | grep "\["' >> /tmp/bgout 2>&1
-    echo $?
-}
+  function check_isa_support() {
+    /lib/ld-linux-x86-64.so.2 --help | grep -q "$1 (supported, searched)"
+    return $?
+  }
 
-add_specific_repo() {
-    local isa_level="$1"
-    local gawk_script="$2"
-    local repo_name="$3"
-    local cmd_check="check_supported_isa_level ${isa_level}"
-
-    local pacman_conf="$MNT/etc/pacman.conf"
-    local pacman_conf_cachyos="$MNT/tmp/pacman.conf"
-    local pacman_conf_path_backup="$MNT/etc/pacman.conf.bak"
-
-    local is_isa_supported="$(eval ${cmd_check})"
-    if [ $is_isa_supported -eq 0 ]; then
-        echo "${isa_level} is supported"
-
-        cp $pacman_conf $pacman_conf_cachyos
-        gawk -i inplace -f $gawk_script $pacman_conf_cachyos || true
-
-        echo "Backup old config"
-        mv $pacman_conf $pacman_conf_path_backup
-
-        echo "CachyOS ${repo_name} Repo changed"
-        mv $pacman_conf_cachyos $pacman_conf
+  function check_entry_status() {
+    if grep -Pq "^$1" "$pacman_conf"; then
+      echo "The entry $1 is active."
+      return 0
+    elif grep -Pq "^#$1" "$pacman_conf"; then
+      echo "The entry $1 is inactive."
+      return 1
     else
-        echo "${isa_level} is not supported"
+      echo "The entry $1 is not found."
+      return 2
     fi
+  }
+
+  function handle_supported_isa() {
+    echo "${isa_level} is supported"
+    cp $pacman_conf $pacman_conf_cachyos
+    if [ "$isa_level" = "x86-64-v4" ]; then
+      gawk -i inplace -f $gawk_script_v4 $pacman_conf_cachyos || true
+    else
+      gawk -i inplace -f $gawk_script $pacman_conf_cachyos || true
+    fi
+    echo "Backup old config"
+    mv $pacman_conf $pacman_conf_path_backup
+    echo "CachyOS ${repo_name} Repo changed"
+    mv $pacman_conf_cachyos $pacman_conf
+  }
+
+  for isa_level in "${isa_levels[@]}"; do
+    if check_isa_support $isa_level; then
+      for entry in "${active_entries[@]}"; do
+        if check_entry_status $entry; then
+          handle_supported_isa
+        fi
+      done
+    else
+      echo "${isa_level} is not supported"
+    fi
+  done
 }
 
-install_cachyos_repo() {
+install_cachyos_keys() {
     echo "Installing CachyOS repo.."
+
 	{
 		chrun "pacman-key --recv-keys 882DCFE48E2051D48E2562ABF3B607488DB35A47 --keyserver keyserver.ubuntu.com"
 		chrun "pacman-key --finger 882DCFE48E2051D48E2562ABF3B607488DB35A47"
@@ -2051,20 +2065,9 @@ install_cachyos_repo() {
 						"${mirror_url}/cachyos-v4-mirrorlist-5-1-any.pkg.tar.zst"  \
 						"${mirror_url}/pacman-6.0.2-10-x86_64.pkg.tar.zst" --noconfirm"
 
+		install_cachyos_repos
 
-		local is_repo_added="$(check_if_repo_was_added)"
-		local is_repo_commented="$(check_if_repo_was_commented)"
-
-		if [ $is_repo_added -ne 0 ] || [ $is_repo_commented -ne 0 ]; then
-			add_specific_repo x86-64-v3 $MNT/etc/pacman.d/install-repo.awk cachyos-v3
-			#FIXME: during the install, it false detects support for v4
-			# add_specific_repo x86-64-v4 $MNT/etc/pacman.d/install-v4-repo.awk cachyos-v4
-			chrun "pacman -Syyu --noconfirm"
-		else
-			echo "Repo is already added!"
-		fi
-
-
+		chrun "pacman -Syyu --noconfirm"
 
 	} >> /tmp/bgout 2>&1
 }
@@ -2106,7 +2109,7 @@ install_check_bg()
 		chrun "pacman -S archlinux-keyring archlabs-keyring --noconfirm"
 
 		install_osamc_key
-		install_cachyos_repo
+		install_cachyos_keys
 
 		chrun "pacman -S ${ISO_PKGS[*]} $luks $NET_TYPE --noconfirm --needed"
 
@@ -2257,7 +2260,7 @@ install_background()
 			fi
 			chrun "pacman -S archlinux-keyring archlabs-keyring --noconfirm"
 
-			install_cachyos_repo
+			install_cachyos_keys
 
 			chrun "pacman -S ${ISO_PKGS[*]} $luks $NET_TYPE --noconfirm --needed"
 
