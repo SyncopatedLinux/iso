@@ -2049,7 +2049,7 @@ install_cachyos_repos() {
   done
 }
 
-install_cachyos_keys() {
+install_cachyos_key() {
     echo "Installing CachyOS repo.."
 
 	{
@@ -2075,7 +2075,17 @@ install_cachyos_keys() {
 install_osamc_key() {
 	chrun "curl https://arch.osamc.de/proaudio/osamc.gpg | pacman-key --add -"
 
+	chrun "pacman-key --finger 762AE5DB2B38786364BD81C4B9141BCC62D38EE5"
+
 	chrun "pacman-key --lsign-key 762AE5DB2B38786364BD81C4B9141BCC62D38EE5"
+}
+
+install_syncopated_key() {
+	chrun "curl http://soundbot.hopto.org/syncopated.gpg | pacman-key --add -"
+
+	chrun "pacman-key --finger 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A"
+
+	chrun "pacman-key --lsign-key 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A"
 }
 
 install_check_bg()
@@ -2105,11 +2115,13 @@ install_check_bg()
 			chrun "pacman-key --finger '$key'"
 			chrun "pacman-key --lsign-key '$key'"
 		fi
+
 		chrun "pacman -Syyu --noconfirm"
 		chrun "pacman -S archlinux-keyring archlabs-keyring --noconfirm"
 
+		install_cachyos_key
 		install_osamc_key
-		install_cachyos_keys
+		install_syncopated_key
 
 		chrun "pacman -S ${ISO_PKGS[*]} $luks $NET_TYPE --noconfirm --needed"
 
@@ -2260,7 +2272,7 @@ install_background()
 			fi
 			chrun "pacman -S archlinux-keyring archlabs-keyring --noconfirm"
 
-			install_cachyos_keys
+			install_cachyos_key
 
 			chrun "pacman -S ${ISO_PKGS[*]} $luks $NET_TYPE --noconfirm --needed"
 
