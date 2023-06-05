@@ -1742,7 +1742,8 @@ install_user()
 	# check if there's an existing user home for new user (separate /home partition)
 	[[ -d "$MNT/home/$NEWUSER" ]] && i=1
 
-	chrun "useradd -m -g users -G $groups -s /bin/$NEWSHELL $NEWUSER" 2> "$ERR" 2>&1
+	chrun "groupadd $NEWUSER" 2> "$ERR" 2>&1
+	chrun "useradd -m -g $NEWUSER -G $groups -s /bin/$NEWSHELL $NEWUSER" 2> "$ERR" 2>&1
 	errshow 1 "chrun 'useradd -m -g users -G $groups -s /bin/$NEWSHELL $NEWUSER'"
 	chrun "chpasswd <<< '$NEWUSER:$USER_PASS'" 2> "$ERR" 2>&1
 	errshow 1 "chrun 'chpasswd <<< \"$NEWUSER:$USER_PASS\"'"
@@ -2061,6 +2062,10 @@ install_check_bg()
 	cp -f /usr/local/bin/cachyos-repo.sh "$MNT/usr/local/bin/"
 	cp -f /usr/local/bin/syncopated-repo.sh "$MNT/usr/local/bin/"
 
+	install_osamc_key
+	install_syncopated_repo
+	install_cachyos_repo
+
 	al_repo "$MNT/etc/pacman.conf"
 
 	{
@@ -2072,10 +2077,6 @@ install_check_bg()
 
 		chrun "pacman -Syyu --noconfirm"
 		chrun "pacman -S archlinux-keyring archlabs-keyring --noconfirm"
-
-		install_osamc_key
-		install_syncopated_repo
-		install_cachyos_repo
 
 		chrun "pacman -S ${ISO_PKGS[*]} $luks $NET_TYPE --noconfirm --needed"
 
@@ -2223,6 +2224,10 @@ install_background()
 		cp -f /usr/local/bin/cachyos-repo.sh "$MNT/usr/local/bin/"
 		cp -f /usr/local/bin/syncopated-repo.sh "$MNT/usr/local/bin/"
 
+		install_osamc_key
+		install_syncopated_repo
+		install_cachyos_repo
+
 		al_repo "$MNT/etc/pacman.conf"
 		{
 			chrun "pacman -Syyu --noconfirm"
@@ -2231,11 +2236,9 @@ install_background()
 				chrun "pacman-key --finger '$key'"
 				chrun "pacman-key --lsign-key '$key'"
 			fi
-			chrun "pacman -S archlinux-keyring archlabs-keyring --noconfirm"
 
-			install_osamc_key
-			install_syncopated_repo
-			install_cachyos_repo
+			chrun "pacman -Syyu --noconfirm"
+			chrun "pacman -S archlinux-keyring archlabs-keyring --noconfirm"
 
 			chrun "pacman -S ${ISO_PKGS[*]} $luks $NET_TYPE --noconfirm --needed"
 
