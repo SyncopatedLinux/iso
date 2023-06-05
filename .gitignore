@@ -1,6 +1,6 @@
 *.qcow2
 *.iso
-cachyos-repo/
-syncopated-repo/
+# cachyos-repo/
+# syncopated-repo/
 cachyos-repo.tar.xz
 syncopated-repo.tar.xz

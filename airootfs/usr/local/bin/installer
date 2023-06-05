@@ -2014,23 +2014,15 @@ install_packages()
 
 install_cachyos_repo() {
     echo "Installing CachyOS repo.."
-
 	{
-  	chrun "wget -O /tmp/cachyos-repo.tar.xz http://syncopated.hopto.org/cachyos-repo.tar.xz"
-  	chrun "tar -xvf /tmp/cachyos-repo.tar.xz --directory=/tmp"
-  	chrun "cd /tmp/cachyos-repo && ./cachyos-repo.sh --install"
-
+  	chrun "/usr/local/bin/cachyos-repo.sh --install"
 	} >> /tmp/bgout 2>&1
 }
 
 install_syncopated_repo() {
     echo "Installing Syncopated repo.."
-
 	{
-  	chrun "wget -O /tmp/syncopated-repo.tar.xz http://syncopated.hopto.org/syncopated-repo.tar.xz"
-  	chrun "tar -xvf /tmp/syncopated-repo.tar.xz --directory=/tmp"
-  	chrun "cd /tmp/syncopated-repo && ./syncopated-repo.sh --install"
-
+  	chrun "/usr/local/bin/syncopated-repo.sh --install"
 	} >> /tmp/bgout 2>&1
 }
 
@@ -2062,6 +2054,12 @@ install_check_bg()
 	cp -Rf /etc/pacman.d "$MNT/etc/"
 	cp -f /etc/pacman.conf "$MNT/etc/"
 	cp -f /etc/pacman.d/mirrorlist "$MNT/etc/pacman.d/"
+
+	cp -Rf /usr/local/share/cachyos-repo "$MNT/usr/local/share/"
+	cp -Rf /usr/local/share/syncopated-repo "$MNT/usr/local/share/"
+
+	cp -f /usr/local/bin/cachyos-repo.sh "$MNT/usr/local/bin/"
+	cp -f /usr/local/bin/syncopated-repo.sh "$MNT/usr/local/bin/"
 
 	al_repo "$MNT/etc/pacman.conf"
 
@@ -2218,6 +2216,13 @@ install_background()
 		cp -Rf /etc/pacman.d "$MNT/etc/"
 		cp -f /etc/pacman.conf "$MNT/etc/"
 		cp -f /etc/pacman.d/mirrorlist "$MNT/etc/pacman.d/"
+
+		cp -Rf /usr/local/share/cachyos-repo "$MNT/usr/local/share/"
+		cp -Rf /usr/local/share/syncopated-repo "$MNT/usr/local/share/"
+
+		cp -f /usr/local/bin/cachyos-repo.sh "$MNT/usr/local/bin/"
+		cp -f /usr/local/bin/syncopated-repo.sh "$MNT/usr/local/bin/"
+
 		al_repo "$MNT/etc/pacman.conf"
 		{
 			chrun "pacman -Syyu --noconfirm"
