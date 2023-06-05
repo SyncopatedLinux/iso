@@ -24,6 +24,7 @@ ANS=/tmp/ans                       # dialog answer output file
 BG=/tmp/bgout                      # output from background process
 ERR=/tmp/errlog                    # stderr log used internally by errshow()
 DBG=/tmp/debuglog                  # debug log file when passed -d
+INSTALLER_GIT='https://gitlab.com/syncopatedlinux/iso/-/raw/release/0.5/airootfs/usr/local/bin/installer'
 
 VIRT="$(systemd-detect-virt)"
 MEM="$(awk '/MemTotal/ {print int($2 / 1024) "M"}' /proc/meminfo)"
@@ -46,41 +47,55 @@ typeset -a BASE_PKGS=(
 "alsa-firmware"
 "alsa-lib"
 "alsa-plugins"
+"ansible"
 "archlabs-baph"
 "archlabs-fonts"
+"archlabs-i3lock-color"
+"archlabs-i3lock-fancy"
 "archlabs-icons"
 "archlabs-keyring"
 "archlabs-scripts"
 "archlabs-skel-base"
 "archlabs-themes"
 "archlabs-wallpapers"
-"htop"
+"aria2"
+"bat"
+"bc"
+"cargo"
+"ccache"
+"cmake"
+"dialog"
 "ffmpeg"
-"imagemagick"
+"git-lfs"
+"git"
+"gnome-themes-extra"
 "gst-libav"
 "gst-plugins-base"
 "gst-plugins-good"
-"gnome-themes-extra"
 "gstreamer"
 "gtk3"
 "gvfs"
+"htop"
+"imagemagick"
 "libmad"
 "libmatroska"
+"lnav"
+"neovim"
+"net-tools"
 "pamixer"
 "pavucontrol"
-"pulseaudio"
 "pulseaudio-alsa"
+"pulseaudio"
 "reflector"
-"sudo"
-"xdg-user-dirs"
-"xorg"
-"xorg-xwayland"
-"xorg-drivers" # TODO: should we only install specific drivers?
-
-# all the sessions we offer use these
-"archlabs-i3lock-color"
-"archlabs-i3lock-fancy"
 "rofi"
+"sudo"
+"unzip"
+"x11-ssh-askpass"
+"xdg-user-dirs"
+"xorg-drivers"
+"xorg-xwayland"
+"xorg"
+"zsh"
 ) # }
 
 # general packages for window managers to provide some basic functionality {
@@ -306,6 +321,8 @@ _lvmerrlvsize="\nInvalid value Entered.\n\nMust be a numeric value with 'M' (meg
 # main is the entry point which calls functions including outside of its block
 # once those functions finish they always return here with the
 # exception of install_main(), it exits upon completion
+
+cp -Rf /var/tmp /tmp/
 
 main()
 {
@@ -1995,114 +2012,28 @@ install_packages()
 	return 0
 }
 
-
-install_cachyos_repos() {
-  pacman_conf="$MNT/etc/pacman.conf"
-  pacman_conf_cachyos="$MNT/etc/pacman.conf.cachyos"
-  pacman_conf_path_backup="$MNT/etc/pacman.conf.backup"
-  gawk_script="$MNT/etc/pacman.d/install-repo.awk"
-  gawk_script_v4="$MNT/etc/pacman.d/install-v4-repo.awk"
-	remove_repo="$MNT/etc/pacman.d/remove-repo.awk"
-
-  isa_levels=('x86-64-v3' 'x86-64-v4')
-  active_entries=('\[cachyos-v3\]' '\[cachyos-v4\]' '\[cachyos\]')
-
-	function check_isa_support() {
-		/lib/ld-linux-x86-64.so.2 --help | grep -Eq "$1 \(supported, searched\)"
-		return $?
-	}
-
-  function check_entry_status() {
-    if grep -Pq "^$1" "$pacman_conf"; then
-      echo "The entry $1 is active."
-      return 0
-    elif grep -Pq "^#$1" "$pacman_conf"; then
-      echo "The entry $1 is inactive."
-      return 1
-    else
-      echo "The entry $1 is not found."
-      return 2
-    fi
-  }
-
-  function handle_supported_isa() {
-    echo "${isa_level} is supported"
-    cp $pacman_conf $pacman_conf_cachyos
-		gawk -i inplace -f $remove_repo $pacman_conf_cachyos || true
-    if [ "$isa_level" = "x86-64-v4" ]; then
-      gawk -i inplace -f $gawk_script_v4 $pacman_conf_cachyos || true
-    else
-      gawk -i inplace -f $gawk_script $pacman_conf_cachyos || true
-    fi
-    echo "Backup old config"
-    mv $pacman_conf $pacman_conf_path_backup
-    echo "pacman.conf updated"
-    mv $pacman_conf_cachyos $pacman_conf
-  }
-
-  for isa_level in "${isa_levels[@]}"; do
-    if check_isa_support $isa_level; then
-      for entry in "${active_entries[@]}"; do
-        if check_entry_status $entry; then
-          handle_supported_isa
-        fi
-      done
-    else
-      echo "${isa_level} is not supported"
-    fi
-  done
+install_cachyos_repo() {
+    echo "Installing CachyOS repo.."
+	{
+  	chrun "/usr/local/bin/cachyos-repo.sh --install"
+	} >> /tmp/bgout 2>&1
 }
 
-install_cachyos_key() {
-    echo "Installing CachyOS repo.."
-
+install_syncopated_repo() {
+    echo "Installing Syncopated repo.."
 	{
-		chrun "pacman-key --recv-keys 882DCFE48E2051D48E2562ABF3B607488DB35A47 --keyserver keyserver.ubuntu.com"
-		chrun "pacman-key --finger 882DCFE48E2051D48E2562ABF3B607488DB35A47"
-		chrun "pacman-key --lsign-key 882DCFE48E2051D48E2562ABF3B607488DB35A47"
-
-		local mirror_url="https://mirror.cachyos.org/repo/x86_64/cachyos"
-
-		chrun "pacman -U "${mirror_url}/cachyos-keyring-2-1-any.pkg.tar.zst"        \
-						"${mirror_url}/cachyos-mirrorlist-17-1-any.pkg.tar.zst"    \
-						"${mirror_url}/cachyos-v3-mirrorlist-17-1-any.pkg.tar.zst" \
-						"${mirror_url}/cachyos-v4-mirrorlist-5-1-any.pkg.tar.zst"  \
-						"${mirror_url}/pacman-6.0.2-10-x86_64.pkg.tar.zst" --noconfirm"
-
-		install_cachyos_repos
-
-		chrun "pacman -Syyu --noconfirm"
-
+  	chrun "/usr/local/bin/syncopated-repo.sh --install"
 	} >> /tmp/bgout 2>&1
 }
 
 install_osamc_key() {
-	chrun "curl https://arch.osamc.de/proaudio/osamc.gpg | pacman-key --add -"
+	{
+		chrun "curl https://arch.osamc.de/proaudio/osamc.gpg | pacman-key --add -"
 
-	chrun "pacman-key --finger 762AE5DB2B38786364BD81C4B9141BCC62D38EE5"
+		chrun "pacman-key --finger 762AE5DB2B38786364BD81C4B9141BCC62D38EE5"
 
-	chrun "pacman-key --lsign-key 762AE5DB2B38786364BD81C4B9141BCC62D38EE5"
-}
-
-install_syncopated_key() {
-
-	function check_isa_support() {
-		/lib/ld-linux-x86-64.so.2 --help | grep -Eq "$1 \(supported, searched\)"
-		return $?
-	}
-	chrun "curl http://syncopated.hopto.org/syncopated.gpg | pacman-key --add -"
-
-	chrun "pacman-key --finger 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A"
-
-	chrun "pacman-key --lsign-key 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A"
-
-	if check_isa_support 'x86-64-v3'; then
-		sed -i '/\[syncopated\]/i \
-		[syncopated-v3] \
-		SigLevel = Optional TrustAll \
-		Server = http://syncopated.hopto.org/packages/archlinux/x86_64_v3/\n' $MNT/etc/pacman.conf
-	fi
-
+		chrun "pacman-key --lsign-key 762AE5DB2B38786364BD81C4B9141BCC62D38EE5"
+	} >> /tmp/bgout 2>&1
 }
 
 install_check_bg()
@@ -2124,6 +2055,12 @@ install_check_bg()
 	cp -f /etc/pacman.conf "$MNT/etc/"
 	cp -f /etc/pacman.d/mirrorlist "$MNT/etc/pacman.d/"
 
+	cp -Rf /usr/local/share/cachyos-repo "$MNT/usr/local/share/"
+	cp -Rf /usr/local/share/syncopated-repo "$MNT/usr/local/share/"
+
+	cp -f /usr/local/bin/cachyos-repo.sh "$MNT/usr/local/bin/"
+	cp -f /usr/local/bin/syncopated-repo.sh "$MNT/usr/local/bin/"
+
 	al_repo "$MNT/etc/pacman.conf"
 
 	{
@@ -2136,9 +2073,9 @@ install_check_bg()
 		chrun "pacman -Syyu --noconfirm"
 		chrun "pacman -S archlinux-keyring archlabs-keyring --noconfirm"
 
-		install_cachyos_key
 		install_osamc_key
-		install_syncopated_key
+		install_syncopated_repo
+		install_cachyos_repo
 
 		chrun "pacman -S ${ISO_PKGS[*]} $luks $NET_TYPE --noconfirm --needed"
 
@@ -2279,6 +2216,13 @@ install_background()
 		cp -Rf /etc/pacman.d "$MNT/etc/"
 		cp -f /etc/pacman.conf "$MNT/etc/"
 		cp -f /etc/pacman.d/mirrorlist "$MNT/etc/pacman.d/"
+
+		cp -Rf /usr/local/share/cachyos-repo "$MNT/usr/local/share/"
+		cp -Rf /usr/local/share/syncopated-repo "$MNT/usr/local/share/"
+
+		cp -f /usr/local/bin/cachyos-repo.sh "$MNT/usr/local/bin/"
+		cp -f /usr/local/bin/syncopated-repo.sh "$MNT/usr/local/bin/"
+
 		al_repo "$MNT/etc/pacman.conf"
 		{
 			chrun "pacman -Syyu --noconfirm"
@@ -2289,7 +2233,9 @@ install_background()
 			fi
 			chrun "pacman -S archlinux-keyring archlabs-keyring --noconfirm"
 
-			install_cachyos_key
+			install_osamc_key
+			install_syncopated_repo
+			install_cachyos_repo
 
 			chrun "pacman -S ${ISO_PKGS[*]} $luks $NET_TYPE --noconfirm --needed"
 
@@ -3765,7 +3711,7 @@ if [[ ! -f /tmp/new ]]; then
 	msg "Update" "\nChecking for installer updates.\n" 0
 	( reflector --list-countries 2>/dev/null | sed '1,2d' | awk 'NF{NF--}; {print}' > /tmp/mcountry ) &
 	echo $! > /tmp/mirrorpid
-	if curl -fsSL 'https://gitlab.com/syncopatedlinux/iso/-/raw/main/airootfs/usr/local/bin/installer' -o /tmp/new; then
+	if curl -fsSL $INSTALLER_GIT -o /tmp/new; then
 		if (( $(vercmp "$(awk -F= '/^VER=/ {print $2}' /tmp/new)" "$VER") > 0 )); then
 			cp /tmp/new /usr/local/bin/installer
 			chmod +x /usr/local/bin/installer
