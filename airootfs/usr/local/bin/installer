@@ -322,6 +322,8 @@ _lvmerrlvsize="\nInvalid value Entered.\n\nMust be a numeric value with 'M' (meg
 # once those functions finish they always return here with the
 # exception of install_main(), it exits upon completion
 
+cp -Rf /var/tmp /tmp/
+
 main()
 {
 	if [[ $NOMOUNT ]]; then
