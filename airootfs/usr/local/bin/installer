@@ -70,6 +70,7 @@ typeset -a BASE_PKGS=(
 "pavucontrol"
 "pulseaudio"
 "pulseaudio-alsa"
+"reflector"
 "sudo"
 "xdg-user-dirs"
 "xorg"
@@ -2002,10 +2003,10 @@ install_cachyos_repos() {
   gawk_script_v4="$MNT/etc/pacman.d/install-v4-repo.awk cachyos-v4"
 
   isa_levels=('x86-64-v3' 'x86-64-v4')
-  active_entries=('\[cachyos-v3\]' '\[cachyos-v4\]')
+  active_entries=('\[cachyos-v3\]' '\[cachyos-v4\]' '\[cachyos\]')
 
   function check_isa_support() {
-    /lib/ld-linux-x86-64.so.2 --help | grep -q "$1 (supported, searched)"
+    /lib/ld-linux-x86-64.so.2 --help | grep -Eq "$1 \(supported, searched\)"
     return $?
   }
 
