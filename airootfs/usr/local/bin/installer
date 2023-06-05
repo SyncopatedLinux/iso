@@ -322,8 +322,6 @@ _lvmerrlvsize="\nInvalid value Entered.\n\nMust be a numeric value with 'M' (meg
 # once those functions finish they always return here with the
 # exception of install_main(), it exits upon completion
 
-cp -Rf /var/tmp /tmp/
-
 main()
 {
 	if [[ $NOMOUNT ]]; then
@@ -2374,6 +2372,8 @@ prerun_grub()
 	else
 		echo "GRUB_DISABLE_OS_PROBER=false" >> "$MNT/etc/default/grub"
 	fi
+
+	cp -Rf /usr/share/grub/themes "$MNT/usr/share/grub/themes/"
 
 	return 0
 }
