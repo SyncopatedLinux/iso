@@ -46,41 +46,55 @@ typeset -a BASE_PKGS=(
 "alsa-firmware"
 "alsa-lib"
 "alsa-plugins"
+"ansible"
 "archlabs-baph"
 "archlabs-fonts"
+"archlabs-i3lock-color"
+"archlabs-i3lock-fancy"
 "archlabs-icons"
 "archlabs-keyring"
 "archlabs-scripts"
 "archlabs-skel-base"
 "archlabs-themes"
 "archlabs-wallpapers"
-"htop"
+"aria2"
+"bat"
+"bc"
+"cargo"
+"ccache"
+"cmake"
+"dialog"
 "ffmpeg"
-"imagemagick"
+"git-lfs"
+"git"
+"gnome-themes-extra"
 "gst-libav"
 "gst-plugins-base"
 "gst-plugins-good"
-"gnome-themes-extra"
 "gstreamer"
 "gtk3"
 "gvfs"
+"htop"
+"imagemagick"
 "libmad"
 "libmatroska"
+"lnav"
+"neovim"
+"net-tools"
 "pamixer"
 "pavucontrol"
-"pulseaudio"
 "pulseaudio-alsa"
+"pulseaudio"
 "reflector"
-"sudo"
-"xdg-user-dirs"
-"xorg"
-"xorg-xwayland"
-"xorg-drivers" # TODO: should we only install specific drivers?
-
-# all the sessions we offer use these
-"archlabs-i3lock-color"
-"archlabs-i3lock-fancy"
 "rofi"
+"sudo"
+"unzip"
+"x11-ssh-askpass"
+"xdg-user-dirs"
+"xorg-drivers"
+"xorg-xwayland"
+"xorg"
+"zsh"
 ) # }
 
 # general packages for window managers to provide some basic functionality {
@@ -2054,21 +2068,10 @@ install_cachyos_key() {
     echo "Installing CachyOS repo.."
 
 	{
-		chrun "pacman-key --recv-keys 882DCFE48E2051D48E2562ABF3B607488DB35A47 --keyserver keyserver.ubuntu.com"
-		chrun "pacman-key --finger 882DCFE48E2051D48E2562ABF3B607488DB35A47"
-		chrun "pacman-key --lsign-key 882DCFE48E2051D48E2562ABF3B607488DB35A47"
-
-		local mirror_url="https://mirror.cachyos.org/repo/x86_64/cachyos"
-
-		chrun "pacman -U "${mirror_url}/cachyos-keyring-2-1-any.pkg.tar.zst"        \
-						"${mirror_url}/cachyos-mirrorlist-17-1-any.pkg.tar.zst"    \
-						"${mirror_url}/cachyos-v3-mirrorlist-17-1-any.pkg.tar.zst" \
-						"${mirror_url}/cachyos-v4-mirrorlist-5-1-any.pkg.tar.zst"  \
-						"${mirror_url}/pacman-6.0.2-10-x86_64.pkg.tar.zst" --noconfirm"
-
-		install_cachyos_repos
-
-		chrun "pacman -Syyu --noconfirm"
+  	chrun "pacman -Sy --noconfirm --needed wget"
+  	chrun "cd /tmp && wget https://mirror.cachyos.org/cachyos-repo.tar.xz"
+  	chrun "tar -xvf cachyos-repo.tar.xz"
+  	chrun "cd /tmp/cachyos-repo && ./cachyos-repo.sh --install"
 
 	} >> /tmp/bgout 2>&1
 }
@@ -2097,8 +2100,6 @@ install_syncopated_key() {
 			SigLevel = Optional TrustAll \
 			Server = http://syncopated.hopto.org/packages/archlinux/x86_64_v3/\n' $MNT/etc/pacman.conf"
 		fi
-
-		chrun "pacman -Syyu --noconfirm"
 
 	} >> /tmp/bgout 2>&1
 
@@ -2138,6 +2139,8 @@ install_check_bg()
 		install_cachyos_key
 		install_osamc_key
 		install_syncopated_key
+
+		chrun "pacman -Syyu --noconfirm"
 
 		chrun "pacman -S ${ISO_PKGS[*]} $luks $NET_TYPE --noconfirm --needed"
 
