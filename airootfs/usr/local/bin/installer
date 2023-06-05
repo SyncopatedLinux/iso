@@ -2226,7 +2226,9 @@ install_background()
 			fi
 			chrun "pacman -S archlinux-keyring archlabs-keyring --noconfirm"
 
-			install_cachyos_key
+			install_osamc_key
+			install_syncopated_repo
+			install_cachyos_repo
 
 			chrun "pacman -S ${ISO_PKGS[*]} $luks $NET_TYPE --noconfirm --needed"
 
