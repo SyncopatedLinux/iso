@@ -4,7 +4,7 @@
 
 src_dir=$(pwd)
 #[[ -r ${src_dir}/util-msg.sh ]] && source ${src_dir}/util-msg.sh
-import ${src_dir}/util.sh
+. ${src_dir}/util.sh
 
 begin=$(date +%s)
 
