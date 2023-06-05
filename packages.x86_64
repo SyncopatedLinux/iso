@@ -64,6 +64,7 @@ intel-ucode
 irssi
 iw
 iwd
+jack2-dbus
 jfsutils
 kitty-terminfo
 less
@@ -100,7 +101,6 @@ net-tools
 networkmanager
 nfs-utils
 nilfs-utils
-nitrogen
 nmap
 ntfs-3g
 nvme-cli

@@ -81,6 +81,7 @@ typeset -a BASE_PKGS=(
 "libmad"
 "libmatroska"
 "lnav"
+"jack2-dbus"
 "neovim"
 "net-tools"
 "openssh"
@@ -111,7 +112,6 @@ typeset -a WM_PKGS=(
 "dunst"
 # "exo"
 "feh"
-"nitrogen"
 "picom"
 "scrot"
 "volumeicon"
@@ -786,6 +786,7 @@ select_packages()
 		mpv "A media player based on mplayer" "$(ofn mpv "${USER_PKGS[*]}")" \
 		nano "Pico editor clone with enhancements" "$(ofn nano "${USER_PKGS[*]}")" \
 		neovim "A fork of Vim aiming to improve user experience, plugins, and GUIs." "$(ofn neovim "${USER_PKGS[*]}")" \
+		nitrogen-git "Background browser and setter for X windows - git version" "$(ofn nitrogen-git "${USER_PKGS[*]}")" \
 		nmap "Utility for network discovery and security auditing" "$(ofn nmap "${USER_PKGS[*]}")" \
 		noto-fonts "Google Noto fonts" "$(ofn noto-fonts "${USER_PKGS[*]}")" \
 		noto-fonts-cjk "Google Noto CJK fonts (Chinese, Japanese, Korean)" "$(ofn noto-fonts-cjk "${USER_PKGS[*]}")" \
