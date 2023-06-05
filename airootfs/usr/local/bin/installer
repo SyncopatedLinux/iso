@@ -2082,7 +2082,6 @@ install_osamc_key() {
 }
 
 install_syncopated_key() {
-
 	chrun "curl http://syncopated.hopto.org/syncopated.gpg | pacman-key --add -"
 
 	chrun "pacman-key --finger 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A"
@@ -2095,6 +2094,8 @@ install_syncopated_key() {
 		SigLevel = Optional TrustAll \
 		Server = http://syncopated.hopto.org/packages/archlinux/x86_64_v3/\n' $MNT/etc/pacman.conf
 	fi
+
+	chrun "pacman -Syyu --noconfirm"
 
 }
 
