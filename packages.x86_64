@@ -45,6 +45,7 @@ efibootmgr
 espeakup
 ethtool
 exfatprogs
+fd
 f2fs-tools
 fatresize
 fsarchiver
@@ -120,6 +121,7 @@ pptpclient
 pulseaudio
 pv
 qemu-guest-agent
+ranger
 refind
 reflector
 reiserfsprogs
@@ -127,6 +129,8 @@ rofi
 rp-pppoe
 rsync
 rxvt-unicode-terminfo
+ruby-bundler
+rubygems
 screen
 sdparm
 sg3_utils
