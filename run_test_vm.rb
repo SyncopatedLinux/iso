@@ -76,8 +76,22 @@ end
 
 HOME = ENV['HOME']
 
-iso_folder = File.join(HOME, 'otherspace', 'iso', 'out')
-drive_folder = File.join(HOME, 'otherspace', 'iso')
+iso_folder = prompt.ask("Folder name where isos are stored:") do |q|
+  q.required(true)
+  q.validate ->(v) { return !Dir.exist?(v) }
+  q.messages[:valid?] = "Folder already exists?"
+  q.messages[:required?] = "Folder name must not be empty"
+end
+
+drive_folder = prompt.ask("Folder name where qcow disks are stored:") do |q|
+  q.required(true)
+  q.validate ->(v) { return !Dir.exist?(v) }
+  q.messages[:valid?] = "Folder already exists?"
+  q.messages[:required?] = "Folder name must not be empty"
+end
+
+# iso_folder = File.join(HOME, 'otherspace', 'iso', 'out')
+# drive_folder = File.join(HOME, 'otherspace', 'iso')
 
 iso_files = Dir.glob(File.join(iso_folder, '*.iso')).sort
 drive_files = Dir.glob(File.join(drive_folder, '*.qcow2')).sort
