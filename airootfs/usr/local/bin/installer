@@ -2074,28 +2074,33 @@ install_cachyos_key() {
 }
 
 install_osamc_key() {
-	chrun "curl https://arch.osamc.de/proaudio/osamc.gpg | pacman-key --add -"
+	{
+		chrun "curl https://arch.osamc.de/proaudio/osamc.gpg | pacman-key --add -"
 
-	chrun "pacman-key --finger 762AE5DB2B38786364BD81C4B9141BCC62D38EE5"
+		chrun "pacman-key --finger 762AE5DB2B38786364BD81C4B9141BCC62D38EE5"
 
-	chrun "pacman-key --lsign-key 762AE5DB2B38786364BD81C4B9141BCC62D38EE5"
+		chrun "pacman-key --lsign-key 762AE5DB2B38786364BD81C4B9141BCC62D38EE5"
+	} >> /tmp/bgout 2>&1
 }
 
 install_syncopated_key() {
-	chrun "curl http://syncopated.hopto.org/syncopated.gpg | pacman-key --add -"
+	{
+		chrun "curl http://syncopated.hopto.org/syncopated.gpg | pacman-key --add -"
 
-	chrun "pacman-key --finger 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A"
+		chrun "pacman-key --finger 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A"
 
-	chrun "pacman-key --lsign-key 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A"
+		chrun "pacman-key --lsign-key 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A"
 
-	if check_isa_support "x86-64-v3"; then
-		sed -i '/\[syncopated\]/i \
-		[syncopated-v3] \
-		SigLevel = Optional TrustAll \
-		Server = http://syncopated.hopto.org/packages/archlinux/x86_64_v3/\n' $MNT/etc/pacman.conf
-	fi
+		if check_isa_support 'x86-64-v3'; then
+			chrun "sed -i '/\[syncopated\]/i \
+			[syncopated-v3] \
+			SigLevel = Optional TrustAll \
+			Server = http://syncopated.hopto.org/packages/archlinux/x86_64_v3/\n' $MNT/etc/pacman.conf"
+		fi
 
-	chrun "pacman -Syyu --noconfirm"
+		chrun "pacman -Syyu --noconfirm"
+
+	} >> /tmp/bgout 2>&1
 
 }
 
