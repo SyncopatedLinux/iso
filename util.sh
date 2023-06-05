@@ -8,4 +8,4 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-export INSTALLER_GIT='https://gitlab.com/syncopatedlinux/iso/-/raw/release/0.5/airootfs/usr/local/bin/installer'
+export INSTALLER_GIT='https://gitlab.com/syncopatedlinux/iso/-/raw/main/airootfs/usr/local/bin/installer'

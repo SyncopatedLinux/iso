@@ -24,7 +24,7 @@ ANS=/tmp/ans                       # dialog answer output file
 BG=/tmp/bgout                      # output from background process
 ERR=/tmp/errlog                    # stderr log used internally by errshow()
 DBG=/tmp/debuglog                  # debug log file when passed -d
-INSTALLER_GIT='https://gitlab.com/syncopatedlinux/iso/-/raw/release/0.5/airootfs/usr/local/bin/installer'
+INSTALLER_GIT='https://gitlab.com/syncopatedlinux/iso/-/raw/main/airootfs/usr/local/bin/installer'
 
 VIRT="$(systemd-detect-virt)"
 MEM="$(awk '/MemTotal/ {print int($2 / 1024) "M"}' /proc/meminfo)"
