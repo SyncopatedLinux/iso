@@ -2033,7 +2033,7 @@ install_cachyos_repos() {
     fi
     echo "Backup old config"
     mv $pacman_conf $pacman_conf_path_backup
-    echo "CachyOS ${repo_name} Repo changed"
+    echo "pacman.conf updated"
     mv $pacman_conf_cachyos $pacman_conf
   }
 
