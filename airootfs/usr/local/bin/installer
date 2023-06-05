@@ -1999,8 +1999,8 @@ install_cachyos_repos() {
   pacman_conf="$MNT/etc/pacman.conf"
   pacman_conf_cachyos="$MNT/etc/pacman.conf.cachyos"
   pacman_conf_path_backup="$MNT/etc/pacman.conf.backup"
-  gawk_script="$MNT/etc/pacman.d/install-repo.awk cachyos-v3"
-  gawk_script_v4="$MNT/etc/pacman.d/install-v4-repo.awk cachyos-v4"
+  gawk_script="$MNT/etc/pacman.d/install-repo.awk"
+  gawk_script_v4="$MNT/etc/pacman.d/install-v4-repo.awk"
 
   isa_levels=('x86-64-v3' 'x86-64-v4')
   active_entries=('\[cachyos-v3\]' '\[cachyos-v4\]' '\[cachyos\]')
