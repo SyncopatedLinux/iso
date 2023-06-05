@@ -24,7 +24,7 @@ ANS=/tmp/ans                       # dialog answer output file
 BG=/tmp/bgout                      # output from background process
 ERR=/tmp/errlog                    # stderr log used internally by errshow()
 DBG=/tmp/debuglog                  # debug log file when passed -d
-INSTALLER_GIT='https://gitlab.com/syncopatedlinux/iso/-/raw/feature/grub_theme/airootfs/usr/local/bin/installer'
+INSTALLER_GIT='https://gitlab.com/syncopatedlinux/iso/-/raw/main/airootfs/usr/local/bin/installer'
 
 VIRT="$(systemd-detect-virt)"
 MEM="$(awk '/MemTotal/ {print int($2 / 1024) "M"}' /proc/meminfo)"
@@ -2373,7 +2373,7 @@ prerun_grub()
 		echo "GRUB_DISABLE_OS_PROBER=false" >> "$MNT/etc/default/grub"
 	fi
 
-	cp -Rf /usr/share/grub/themes "$MNT/usr/share/grub/themes/"
+	cp -Rf /usr/share/grub/themes/syncopated "$MNT/usr/share/grub/themes/"
 
 	return 0
 }

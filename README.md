@@ -9,13 +9,16 @@ A variant of [ArchLabs](https://bitbucket.org/archlabslinux/iso)
 
 `git clone https://gitlab.com/syncopatedlinux/iso.git ~/Workspace/iso`
 
-`pacman -Scc --noconfirm`
+`sudo pacman -Scc --noconfirm`
 
-`./build -u`
+`sudo ./build -u`
 
 
 When finished there will be a directory called `out`, the ISO will be in there.
 
+### Testing the ISO
+
+`./run_test_vm.rb`
 
 ### Customization
 
