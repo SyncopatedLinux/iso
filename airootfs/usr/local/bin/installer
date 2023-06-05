@@ -2009,69 +2009,24 @@ install_packages()
 	return 0
 }
 
-check_isa_support() {
-    /lib/ld-linux-x86-64.so.2 --help | grep -Eq "$1 \(supported, searched\)"
-    return $?
-  }
-
-install_cachyos_repos() {
-  pacman_conf="$MNT/etc/pacman.conf"
-  pacman_conf_cachyos="$MNT/etc/pacman.conf.cachyos"
-  pacman_conf_path_backup="$MNT/etc/pacman.conf.backup"
-  gawk_script="$MNT/etc/pacman.d/install-repo.awk"
-  gawk_script_v4="$MNT/etc/pacman.d/install-v4-repo.awk"
-
-  isa_levels=('x86-64-v3' 'x86-64-v4')
-  active_entries=('\[cachyos-v3\]' '\[cachyos-v4\]' '\[cachyos\]')
-
-  function check_entry_status() {
-    if grep -Pq "^$1" "$pacman_conf"; then
-      echo "The entry $1 is active."
-      return 0
-    elif grep -Pq "^#$1" "$pacman_conf"; then
-      echo "The entry $1 is inactive."
-      return 1
-    else
-      echo "The entry $1 is not found."
-      return 2
-    fi
-  }
-
-  function handle_supported_isa() {
-    echo "${isa_level} is supported"
-    cp $pacman_conf $pacman_conf_cachyos
-    if [ "$isa_level" = "x86-64-v4" ]; then
-      gawk -i inplace -f $gawk_script_v4 $pacman_conf_cachyos || true
-    else
-      gawk -i inplace -f $gawk_script $pacman_conf_cachyos || true
-    fi
-    echo "Backup old config"
-    mv $pacman_conf $pacman_conf_path_backup
-    echo "pacman.conf updated"
-    mv $pacman_conf_cachyos $pacman_conf
-  }
-
-  for isa_level in "${isa_levels[@]}"; do
-    if check_isa_support $isa_level; then
-      for entry in "${active_entries[@]}"; do
-        if check_entry_status $entry; then
-          handle_supported_isa
-        fi
-      done
-    else
-      echo "${isa_level} is not supported"
-    fi
-  done
-}
-
-install_cachyos_key() {
+install_cachyos_repo() {
     echo "Installing CachyOS repo.."
 
 	{
-  	chrun "pacman -Sy --noconfirm --needed wget"
-  	chrun "cd /tmp && wget https://mirror.cachyos.org/cachyos-repo.tar.xz"
-  	chrun "tar -xvf cachyos-repo.tar.xz"
+  	chrun "wget -O /tmp/cachyos-repo.tar.xz http://syncopated.hopto.org/cachyos-repo.tar.xz"
+  	chrun "tar -xvf /tmp/cachyos-repo.tar.xz --directory=/tmp"
   	chrun "cd /tmp/cachyos-repo && ./cachyos-repo.sh --install"
+
+	} >> /tmp/bgout 2>&1
+}
+
+install_syncopated_repo() {
+    echo "Installing Syncopated repo.."
+
+	{
+  	chrun "wget -O /tmp/syncopated-repo.tar.xz http://syncopated.hopto.org/syncopated-repo.tar.xz"
+  	chrun "tar -xvf /tmp/syncopated-repo.tar.xz --directory=/tmp"
+  	chrun "cd /tmp/syncopated-repo && ./syncopated-repo.sh --install"
 
 	} >> /tmp/bgout 2>&1
 }
@@ -2084,25 +2039,6 @@ install_osamc_key() {
 
 		chrun "pacman-key --lsign-key 762AE5DB2B38786364BD81C4B9141BCC62D38EE5"
 	} >> /tmp/bgout 2>&1
-}
-
-install_syncopated_key() {
-	{
-		chrun "curl http://syncopated.hopto.org/syncopated.gpg | pacman-key --add -"
-
-		chrun "pacman-key --finger 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A"
-
-		chrun "pacman-key --lsign-key 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A"
-
-		if check_isa_support 'x86-64-v3'; then
-			chrun "sed -i '/\[syncopated\]/i \
-			[syncopated-v3] \
-			SigLevel = Optional TrustAll \
-			Server = http://syncopated.hopto.org/packages/archlinux/x86_64_v3/\n' $MNT/etc/pacman.conf"
-		fi
-
-	} >> /tmp/bgout 2>&1
-
 }
 
 install_check_bg()
@@ -2136,11 +2072,9 @@ install_check_bg()
 		chrun "pacman -Syyu --noconfirm"
 		chrun "pacman -S archlinux-keyring archlabs-keyring --noconfirm"
 
-		install_cachyos_key
 		install_osamc_key
-		install_syncopated_key
-
-		chrun "pacman -Syyu --noconfirm"
+		install_syncopated_repo
+		install_cachyos_repo
 
 		chrun "pacman -S ${ISO_PKGS[*]} $luks $NET_TYPE --noconfirm --needed"
 
