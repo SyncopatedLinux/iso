@@ -2,6 +2,10 @@
 
 #shellcheck disable=2016
 
+src_dir=$(pwd)
+#[[ -r ${src_dir}/util-msg.sh ]] && source ${src_dir}/util-msg.sh
+. ${src_dir}/util.sh
+
 begin=$(date +%s)
 
 if ! hash mkarchiso curl > /dev/null 2>&1; then
@@ -34,7 +38,7 @@ while getopts ":huLtl:" OPT; do
 		u)
 			echo "Updating installer remotely"
 			sleep 0.5
-			if ! curl -#fSL https://gitlab.com/syncopatedlinux/iso/-/raw/main/airootfs/usr/local/bin/installer -o airootfs/usr/local/bin/installer; then
+			if ! curl -#fSL $INSTALLER_GIT -o airootfs/usr/local/bin/installer; then
 				echo "${0##*/}: error: failed to update installer"
 				exit 1
 			fi
@@ -85,7 +89,7 @@ fetch_cachyos_mirrorlist() {
 
     local _mirrorlist_url="https://github.com/CachyOS/CachyOS-PKGBUILDS/raw/master/cachyos-mirrorlist/cachyos-mirrorlist"
 
-    curl -sSL "${_mirrorlist_url}" > archiso/airootfs/etc/pacman.d/cachyos-mirrorlist
+    curl -sSL "${_mirrorlist_url}" > airootfs/etc/pacman.d/cachyos-mirrorlist
 }
 
 fetch_cachyos_mirrorlist
