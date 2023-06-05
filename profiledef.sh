@@ -17,7 +17,7 @@ buildmodes=('iso')
 bootmodes=('bios.syslinux.mbr' 'bios.syslinux.eltorito' 'uefi-ia32.grub.esp' 'uefi-x64.grub.esp' 'uefi-ia32.grub.eltorito' 'uefi-x64.grub.eltorito')
 
 gpg_key="36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A"
-gpg_sender="Robert Pannick (syncopated) <rwpannick@gmail.com>"
+gpg_sender="Robert Pannick <rwpannick@gmail.com>"
 
 arch="x86_64"
 pacman_conf="pacman.conf"
