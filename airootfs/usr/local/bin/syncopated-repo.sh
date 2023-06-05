@@ -150,9 +150,9 @@ run_install() {
 
 	curl http://syncopated.hopto.org/syncopated.gpg | pacman-key --add -
 
-    pacman-key --finger 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A
+    pacman-key --finger 157CA2FC56ECC96A
 
-    pacman-key --lsign-key 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A
+    pacman-key --lsign-key 157CA2FC56ECC96A
 
 
     local is_repo_added="$(check_if_repo_was_added)"
