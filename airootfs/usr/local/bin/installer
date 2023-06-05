@@ -1996,9 +1996,9 @@ install_packages()
 }
 
 check_isa_support() {
-    /lib/ld-linux-x86-64.so.2 --help | grep -Eq "$1 \(supported, searched\)"
-    return $?
-  }
+  /lib/ld-linux-x86-64.so.2 --help | grep -Eq "$1 \(supported, searched\)"
+  return $?
+}
 
 install_cachyos_repos() {
   pacman_conf="$MNT/etc/pacman.conf"
@@ -2090,7 +2090,7 @@ install_syncopated_key() {
 
 	chrun "pacman-key --lsign-key 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A"
 
-	if check_isa_support "x86-64-v3"; then
+	if check_isa_support 'x86-64-v3'; then
 		sed -i '/\[syncopated\]/i \
 		[syncopated-v3] \
 		SigLevel = Optional TrustAll \
