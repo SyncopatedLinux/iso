@@ -24,6 +24,7 @@ ANS=/tmp/ans                       # dialog answer output file
 BG=/tmp/bgout                      # output from background process
 ERR=/tmp/errlog                    # stderr log used internally by errshow()
 DBG=/tmp/debuglog                  # debug log file when passed -d
+INSTALLER_GIT='https://gitlab.com/syncopatedlinux/iso/-/raw/release/0.5/airootfs/usr/local/bin/installer'
 
 VIRT="$(systemd-detect-virt)"
 MEM="$(awk '/MemTotal/ {print int($2 / 1024) "M"}' /proc/meminfo)"
@@ -3701,7 +3702,7 @@ if [[ ! -f /tmp/new ]]; then
 	msg "Update" "\nChecking for installer updates.\n" 0
 	( reflector --list-countries 2>/dev/null | sed '1,2d' | awk 'NF{NF--}; {print}' > /tmp/mcountry ) &
 	echo $! > /tmp/mirrorpid
-	if curl -fsSL 'https://gitlab.com/syncopatedlinux/iso/-/raw/release/0.5/airootfs/usr/local/bin/installer' -o /tmp/new; then
+	if curl -fsSL $INSTALLER_GIT -o /tmp/new; then
 		if (( $(vercmp "$(awk -F= '/^VER=/ {print $2}' /tmp/new)" "$VER") > 0 )); then
 			cp /tmp/new /usr/local/bin/installer
 			chmod +x /usr/local/bin/installer
