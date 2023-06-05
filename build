@@ -89,7 +89,7 @@ fetch_cachyos_mirrorlist() {
 
     local _mirrorlist_url="https://github.com/CachyOS/CachyOS-PKGBUILDS/raw/master/cachyos-mirrorlist/cachyos-mirrorlist"
 
-    curl -sSL "${_mirrorlist_url}" > archiso/airootfs/etc/pacman.d/cachyos-mirrorlist
+    curl -sSL "${_mirrorlist_url}" > airootfs/etc/pacman.d/cachyos-mirrorlist
 }
 
 fetch_cachyos_mirrorlist
