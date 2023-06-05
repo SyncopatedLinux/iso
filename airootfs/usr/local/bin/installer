@@ -1995,6 +1995,11 @@ install_packages()
 	return 0
 }
 
+check_isa_support() {
+    /lib/ld-linux-x86-64.so.2 --help | grep -Eq "$1 \(supported, searched\)"
+    return $?
+  }
+
 install_cachyos_repos() {
   pacman_conf="$MNT/etc/pacman.conf"
   pacman_conf_cachyos="$MNT/etc/pacman.conf.cachyos"
@@ -2004,11 +2009,6 @@ install_cachyos_repos() {
 
   isa_levels=('x86-64-v3' 'x86-64-v4')
   active_entries=('\[cachyos-v3\]' '\[cachyos-v4\]' '\[cachyos\]')
-
-  function check_isa_support() {
-    /lib/ld-linux-x86-64.so.2 --help | grep -Eq "$1 \(supported, searched\)"
-    return $?
-  }
 
   function check_entry_status() {
     if grep -Pq "^$1" "$pacman_conf"; then
@@ -2082,11 +2082,20 @@ install_osamc_key() {
 }
 
 install_syncopated_key() {
-	chrun "curl http://soundbot.hopto.org/syncopated.gpg | pacman-key --add -"
+
+	chrun "curl http://syncopated.hopto.org/syncopated.gpg | pacman-key --add -"
 
 	chrun "pacman-key --finger 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A"
 
 	chrun "pacman-key --lsign-key 36A6ECD355DB42B296C0CEE2157CA2FC56ECC96A"
+
+	if check_isa_support "x86-64-v3"; then
+		sed -i '/\[syncopated\]/i \
+		[syncopated-v3] \
+		SigLevel = Optional TrustAll \
+		Server = http://syncopated.hopto.org/packages/archlinux/x86_64_v3/\n' $MNT/etc/pacman.conf
+	fi
+
 }
 
 install_check_bg()
