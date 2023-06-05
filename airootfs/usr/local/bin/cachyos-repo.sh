@@ -203,7 +203,7 @@ run() {
         run_remove
     fi
 
-    pacman -Syu --noconfirm
+    # pacman -Syu --noconfirm
 }
 
 run
