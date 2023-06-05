@@ -2006,7 +2006,6 @@ install_cachyos_repos() {
   pacman_conf_path_backup="$MNT/etc/pacman.conf.backup"
   gawk_script="$MNT/etc/pacman.d/install-repo.awk"
   gawk_script_v4="$MNT/etc/pacman.d/install-v4-repo.awk"
-	remove_repo="$MNT/etc/pacman.d/remove-repo.awk"
 
   isa_levels=('x86-64-v3' 'x86-64-v4')
   active_entries=('\[cachyos-v3\]' '\[cachyos-v4\]' '\[cachyos\]')
@@ -2027,7 +2026,6 @@ install_cachyos_repos() {
   function handle_supported_isa() {
     echo "${isa_level} is supported"
     cp $pacman_conf $pacman_conf_cachyos
-		gawk -i inplace -f $remove_repo $pacman_conf_cachyos || true
     if [ "$isa_level" = "x86-64-v4" ]; then
       gawk -i inplace -f $gawk_script_v4 $pacman_conf_cachyos || true
     else
