@@ -2,6 +2,7 @@
 
 A variant of [ArchLabs](https://bitbucket.org/archlabslinux/iso)
 
+This build utilizes CachyOS repoostories.
 
 ### Building the ISO
 
