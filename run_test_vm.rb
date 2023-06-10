@@ -98,7 +98,6 @@ drive_folder = File.join(HOME, 'Workspace', 'syncopated', 'iso', 'qcow2')
 iso_files = Dir.glob(File.join(iso_folder, '*.iso')).sort
 drive_files = Dir.glob(File.join(drive_folder, '*.qcow2')).sort
 
-
 # Prompt to choose between virt-install and qemu-system-x86_64
 qemu_choice = prompt.select('Select QEMU command:', ['virt-install', 'qemu-system-x86_64'])
 
@@ -140,11 +139,9 @@ else
     command = VirtInstallCommand.new(selected_iso, selected_drive, vcpus, memory)
     command.execute
   else
-    choice_index = selection.split(')')[0].to_i - 1
-
-    selected_iso = Shellwords.escape(iso_files[choice_index])
-    selected_drive = Shellwords.escape(drive_files[choice_index])
-
+    selected_iso = Shellwords.escape(prompt.select('Select ISO file:', iso_files))
+    selected_drive = Shellwords.escape(prompt.select('Select drive file:', drive_files))
+    
     command = QemuSystemCommand.new(selected_iso, selected_drive, vcpus, memory)
     command.execute
   end
