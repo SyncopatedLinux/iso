@@ -86,6 +86,7 @@ typeset -a BASE_PKGS=(
 "net-tools"
 "openssh"
 "pamixer"
+"paru-bin"
 "pavucontrol"
 "pulseaudio-alsa"
 "pulseaudio"
@@ -100,6 +101,7 @@ typeset -a BASE_PKGS=(
 "xorg-drivers"
 "xorg-xwayland"
 "xorg"
+"wget"
 "zsh"
 ) # }
 
@@ -163,6 +165,7 @@ typeset -a ISO_PKGS=(
 "partimage"
 "ppp"
 "pptpclient"
+"qemu-guest-agent"
 "reflector"
 "rp-pppoe"
 "sdparm"

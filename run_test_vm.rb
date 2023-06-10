@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'tty-prompt'
-require 'tty-file'
 require 'shellwords'
 
 class QemuCommand
@@ -76,27 +75,29 @@ end
 
 HOME = ENV['HOME']
 
-iso_folder = prompt.ask("Folder name where isos are stored:") do |q|
-  q.required(true)
-  q.validate ->(v) { return !Dir.exist?(v) }
-  q.messages[:valid?] = "Folder already exists?"
-  q.messages[:required?] = "Folder name must not be empty"
-end
+prompt = TTY::Prompt.new
 
-drive_folder = prompt.ask("Folder name where qcow disks are stored:") do |q|
-  q.required(true)
-  q.validate ->(v) { return !Dir.exist?(v) }
-  q.messages[:valid?] = "Folder already exists?"
-  q.messages[:required?] = "Folder name must not be empty"
-end
+# iso_folder = prompt.ask("Folder name where isos are stored:") do |q|
+#   q.required(true)
+#   q.validate ->(v) { return !Dir.exist?(v) }
+#   p q.messages
+#   q.messages[:valid?] = "Folder exists"
+#   q.messages[:required?] = "Folder name must not be empty"
+# end
+#
+# drive_folder = prompt.ask("Folder name where qcow disks are stored:") do |q|
+#   q.required(true)
+#   q.validate ->(v) { return !Dir.exist?(v) }
+#   q.messages[:valid?] = "Folder already exists?"
+#   q.messages[:required?] = "Folder name must not be empty"
+# end
 
-# iso_folder = File.join(HOME, 'otherspace', 'iso', 'out')
-# drive_folder = File.join(HOME, 'otherspace', 'iso')
+iso_folder = File.join(HOME, 'Workspace', 'syncopated', 'iso', 'out')
+drive_folder = File.join(HOME, 'Workspace', 'syncopated', 'iso', 'qcow2')
 
 iso_files = Dir.glob(File.join(iso_folder, '*.iso')).sort
 drive_files = Dir.glob(File.join(drive_folder, '*.qcow2')).sort
 
-prompt = TTY::Prompt.new
 
 # Prompt to choose between virt-install and qemu-system-x86_64
 qemu_choice = prompt.select('Select QEMU command:', ['virt-install', 'qemu-system-x86_64'])
