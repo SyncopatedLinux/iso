@@ -1,8 +1,19 @@
-# syncopated live iso
+# syncopated: the iso
 
-A variant of [ArchLabs](https://bitbucket.org/archlabslinux/iso)
+> If I could do it all over again, this is how I would design an operating system. -Bill Gates
 
-This build utilizes CachyOS repoostories.
+> If Bon Jovi were alive today, he'd for sure be confused by this -Rolling Stone
+
+> What the fuck is a linux? -Randall Cunningham
+
+
+### installing the iso
+
+Download the file and write to a usb drive.
+`wget http://gitlab.com/syncopatedlinux/iso/syncopatedlinux_june2023.iso`
+
+Use dd to write the iso to the flash drive
+`sudo dd if=$ISO of=$USB bs=512K oflag=direct status=progress && sync`
 
 ### Building the ISO
 
@@ -14,28 +25,8 @@ This build utilizes CachyOS repoostories.
 
 `sudo ./build -u`
 
-
-When finished there will be a directory called `out`, the ISO will be in there.
-
 ### Testing the ISO
 
 `./run_test_vm.rb`
 
-### Customization
-
-- `profiledef.sh` contains the build setup for archiso and file permissions for certain files on the ISO.
-   See: https://gitlab.archlinux.org/archlinux/archiso/-/blob/master/docs/README.profile.rst
-
-- `packages.x86_64` This will be generated when building, to add more packages edit the build script.
-
-- `efiboot` and `syslinux` contain boot configuration files.
-
-- `pacman.conf` is used while building and has entries for the `archlabs` and `archlabs-testing` repos.
-
-- `airootfs` is the live boot file system. This is where to add anything that you want included on the ISO.
-
-Remember, **everything must be done as root**, if you add something, do it with `su`, `sudo`, or `doas`.
-Once added update `profiledef.sh` if special permissions are needed *(executable, read-only, etc.)*
-Also note that the files included in the iso will **not** be added to installed systems, this must be done
-in the archlabs installer.
-
+#TODO: fake the evidence
