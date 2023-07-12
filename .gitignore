@@ -5,3 +5,4 @@
 # cachyos-repo.tar.xz
 # syncopated-repo.tar.xz
 airootfs/etc/os-release
+arch/out/**
